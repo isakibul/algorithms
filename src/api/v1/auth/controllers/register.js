@@ -1,45 +1,40 @@
-const bcrypt = require("bcrypt");
-const { User } = require("../../../../model");
+const authService = require("../../../../lib/auth");
+const { generateToken } = require("../../../../lib/token");
 
 const register = async (req, res, next) => {
+  const { name, email, password } = req.body;
   try {
-    const { name, email, password } = req.body;
+    const user = await authService.register({ name, email, password });
 
     /**
-     * Check if the email is already in use
+     * generate access token
      */
-    const existingUser = await User.findOne({ email });
-    if (existingUser) {
-      return res.status(400).json({ message: "Email already in use" });
-    }
+    const payload = {
+      id: user.id,
+      name: user.name,
+      email: user.email,
+      role: user.role,
+    };
+    const accessToken = generateToken({ payload });
 
     /**
-     * Hash the password
+     * generate response
      */
-    const hashedPassword = await bcrypt.hash(password, 10);
+    const response = {
+      code: "201",
+      message: "Signup successful",
+      data: {
+        access_token: accessToken,
+      },
+      links: {
+        self: `${req.protocol}://${req.get("host")}${req.originalUrl}`,
+        login: `${req.protocol}://${req.get("host")}/api/v1/auth/login`,
+      },
+    };
 
-    /**
-     * Create a new user
-     */
-    const newUser = new User({
-      name,
-      email,
-      password: hashedPassword,
-    });
-
-    /**
-     * Save the user to the database
-     */
-    await newUser.save();
-
-    /**
-     * Send a success response
-     */
-    res.status(201).json({ message: "User registered successfully" });
+    res.status(201).json(response);
   } catch (error) {
     next(error);
-    console.error("Error registering user:", error.message);
-    res.status(500).json({ message: "An error occurred while registering" });
   }
 };
 

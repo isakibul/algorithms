@@ -1,34 +1,27 @@
-const bcrypt = require("bcrypt");
-const { User } = require("../../../../model");
+const authService = require("../../../../lib/auth");
 
 const login = async (req, res, next) => {
+  const { email, password } = req.body;
   try {
-    const { email, password } = req.body;
+    const accessToken = await authService.login({ email, password });
 
     /**
-     * Find the user by email
+     * generate response
      */
-    const user = await User.findOne({ email });
-    if (!user) {
-      return res.status(400).json({ message: "Invalid email or password" });
-    }
+    const response = {
+      code: 200,
+      message: "Login successful",
+      data: {
+        access_token: accessToken,
+      },
+      links: {
+        self: `${req.protocol}://${req.get("host")}${req.originalUrl}`,
+      },
+    };
 
-    /**
-     * Compare the provided password with the hashed password in the database
-     */
-    const isPasswordValid = await bcrypt.compare(password, user.password);
-    if (!isPasswordValid) {
-      return res.status(400).json({ message: "Invalid email or password" });
-    }
-
-    /**
-     * Login successful
-     */
-    res.status(200).json({ message: "Login successful" });
+    res.status(200).json(response);
   } catch (error) {
     next(error);
-    console.error("Error during login:", error.message);
-    res.status(500).json({ message: "An error occurred while logging in" });
   }
 };
 
