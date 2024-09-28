@@ -30,7 +30,7 @@ const userSchema = new Schema(
       default: "pending",
     },
   },
-  { timestamps: true }
+  { timestamps: true, id: true }
 );
 
 const User = model("User", userSchema);

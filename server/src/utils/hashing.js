@@ -6,6 +6,12 @@ const generateHash = async (payload, saltRound = 10) => {
   return hash;
 };
 
+const hashMatched = async (raw, hash) => {
+  const result = await bcrypt.compare(raw, hash);
+  return result;
+};
+
 module.exports = {
   generateHash,
+  hashMatched,
 };

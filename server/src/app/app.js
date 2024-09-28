@@ -1,9 +1,9 @@
 const express = require("express");
 const routes = require("../routes");
+const applyMiddleware = require("../middleware");
 
 const app = express();
-app.use(express.json());
-
+applyMiddleware(app);
 app.use(routes);
 
 app.get("/health", (req, res) => {

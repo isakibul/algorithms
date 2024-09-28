@@ -10,7 +10,14 @@ const serverError = (msg = "Internal server error") => {
   return error;
 };
 
+const authenticationError = (msg = "Permission denied") => {
+  const error = new Error(msg);
+  error.status = 403;
+  return error;
+};
+
 module.exports = {
   badRequest,
   serverError,
+  authenticationError,
 };
