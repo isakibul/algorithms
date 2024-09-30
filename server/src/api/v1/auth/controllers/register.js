@@ -20,6 +20,7 @@ const register = async (req, res, next) => {
       email: user.email,
       role: user.role,
     };
+
     const accessToken = generateToken({ payload });
 
     const response = {

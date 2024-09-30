@@ -3,9 +3,9 @@ const { generateHash, hashMatched } = require("../../utils/hashing");
 const { generateToken } = require("../token");
 const { badRequest } = require("../../utils/error");
 
-const register = async ({ name, email, password }) => {
+const register = async ({ name, email, password, status = "pending" }) => {
   password = await generateHash(password);
-  const user = await createUser({ name, email, password });
+  const user = await createUser({ name, email, password, status });
   return user;
 };
 

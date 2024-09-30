@@ -7,6 +7,12 @@ router.post("/api/v1/auth/register", authController.register);
 
 router.post("/api/v1/auth/login", authController.login);
 
-router.post("/api/v1/issue/create", authenticate, issueController.create);
+router
+  .route("/api/v1/issue")
+  .post(authenticate, issueController.create)
+  .get(issueController.findAll);
+
+// router.post("/api/v1/issue/create", authenticate, issueController.create);
+// router.post("/api/v1/issue/issues", issueController.findAll);
 
 module.exports = router;
